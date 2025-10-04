@@ -27,39 +27,83 @@ let isCapturing = false;
 
 // Initialize App
 document.addEventListener('DOMContentLoaded', function() {
-    initializeEventListeners();
+    initializeApp();
 });
 
+function initializeApp() {
+    initializeEventListeners();
+    console.log('Photobooth initialized successfully');
+}
+
 function initializeEventListeners() {
-    // Home screen
-    document.querySelectorAll('.frame-option').forEach(option => {
-        option.addEventListener('click', handleFrameSelect);
-    });
+    // Home screen elements - CHECK IF THEY EXIST FIRST
+    const frameOptions = document.querySelectorAll('.frame-option');
+    const numberBtns = document.querySelectorAll('.number-btn');
+    const timerBtns = document.querySelectorAll('.timer-btn');
+    const startSessionBtn = document.getElementById('startSession');
     
-    document.querySelectorAll('.number-btn').forEach(btn => {
-        btn.addEventListener('click', handleNumberSelect);
-    });
+    if (frameOptions.length > 0) {
+        frameOptions.forEach(option => {
+            option.addEventListener('click', handleFrameSelect);
+        });
+    }
     
-    document.querySelectorAll('.timer-btn').forEach(btn => {
-        btn.addEventListener('click', handleTimerSelect);
-    });
+    if (numberBtns.length > 0) {
+        numberBtns.forEach(btn => {
+            btn.addEventListener('click', handleNumberSelect);
+        });
+    }
     
-    document.getElementById('startSession').addEventListener('click', startSession);
+    if (timerBtns.length > 0) {
+        timerBtns.forEach(btn => {
+            btn.addEventListener('click', handleTimerSelect);
+        });
+    }
     
-    // Camera screen
-    document.getElementById('backToHome').addEventListener('click', goToHome);
-    document.getElementById('captureBtn').addEventListener('click', startCapture);
-    document.getElementById('switchCamera').addEventListener('click', switchCamera);
+    if (startSessionBtn) {
+        startSessionBtn.addEventListener('click', startSession);
+    }
     
-    // Frame selector in camera
-    document.querySelectorAll('.frame-mini-btn').forEach(btn => {
-        btn.addEventListener('click', handleFrameMiniSelect);
-    });
+    // Camera screen elements
+    const backToHomeBtn = document.getElementById('backToHome');
+    const captureBtn = document.getElementById('captureBtn');
+    const switchCameraBtn = document.getElementById('switchCamera');
+    const frameMiniBtns = document.querySelectorAll('.frame-mini-btn');
     
-    // Results screen
-    document.getElementById('newSession').addEventListener('click', goToHome);
-    document.getElementById('downloadAll').addEventListener('click', downloadAllPhotos);
-    document.getElementById('sharePhotos').addEventListener('click', sharePhotos);
+    if (backToHomeBtn) {
+        backToHomeBtn.addEventListener('click', goToHome);
+    }
+    
+    if (captureBtn) {
+        captureBtn.addEventListener('click', startCapture);
+    }
+    
+    if (switchCameraBtn) {
+        switchCameraBtn.addEventListener('click', switchCamera);
+    }
+    
+    if (frameMiniBtns.length > 0) {
+        frameMiniBtns.forEach(btn => {
+            btn.addEventListener('click', handleFrameMiniSelect);
+        });
+    }
+    
+    // Results screen elements
+    const newSessionBtn = document.getElementById('newSession');
+    const downloadAllBtn = document.getElementById('downloadAll');
+    const sharePhotosBtn = document.getElementById('sharePhotos');
+    
+    if (newSessionBtn) {
+        newSessionBtn.addEventListener('click', goToHome);
+    }
+    
+    if (downloadAllBtn) {
+        downloadAllBtn.addEventListener('click', downloadAllPhotos);
+    }
+    
+    if (sharePhotosBtn) {
+        sharePhotosBtn.addEventListener('click', sharePhotos);
+    }
 }
 
 function handleFrameSelect(e) {
@@ -72,6 +116,7 @@ function handleFrameSelect(e) {
     
     option.classList.add('active');
     config.frame = frame;
+    console.log('Frame selected:', frame);
 }
 
 function handleNumberSelect(e) {
@@ -84,6 +129,7 @@ function handleNumberSelect(e) {
     
     button.classList.add('active');
     config.photoCount = count;
+    console.log('Photo count set to:', count);
 }
 
 function handleTimerSelect(e) {
@@ -96,6 +142,7 @@ function handleTimerSelect(e) {
     
     button.classList.add('active');
     config.timer = timer;
+    console.log('Timer set to:', timer);
 }
 
 function handleFrameMiniSelect(e) {
@@ -109,6 +156,7 @@ function handleFrameMiniSelect(e) {
     button.classList.add('active');
     config.frame = frame;
     updateFrameOverlay();
+    console.log('Frame changed to:', frame);
 }
 
 function startSession() {
@@ -127,9 +175,14 @@ function goToHome() {
 
 function showScreen(screenName) {
     Object.values(screens).forEach(screen => {
-        screen.classList.remove('active');
+        if (screen) {
+            screen.classList.remove('active');
+        }
     });
-    screens[screenName].classList.add('active');
+    
+    if (screens[screenName]) {
+        screens[screenName].classList.add('active');
+    }
 }
 
 async function initializeCamera() {
@@ -143,11 +196,16 @@ async function initializeCamera() {
         };
         
         stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = stream;
+        
+        if (video) {
+            video.srcObject = stream;
+        }
+        
+        console.log('Camera initialized successfully');
         
     } catch (error) {
         console.error('Error accessing camera:', error);
-        alert('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.');
+        alert('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan dan tidak ada aplikasi lain yang menggunakan kamera.');
     }
 }
 
@@ -165,7 +223,10 @@ async function switchCamera() {
 }
 
 function startCapture() {
-    if (isCapturing) return;
+    if (isCapturing) {
+        console.log('Already capturing, please wait...');
+        return;
+    }
     
     if (config.timer > 0) {
         startCountdown();
@@ -178,16 +239,16 @@ function startCountdown() {
     let count = config.timer;
     isCapturing = true;
     
-    countdownNumber.textContent = count;
-    countdown.classList.add('active');
+    if (countdownNumber) countdownNumber.textContent = count;
+    if (countdown) countdown.classList.add('active');
     
     const countdownInterval = setInterval(() => {
         count--;
-        countdownNumber.textContent = count;
+        if (countdownNumber) countdownNumber.textContent = count;
         
         if (count <= 0) {
             clearInterval(countdownInterval);
-            countdown.classList.remove('active');
+            if (countdown) countdown.classList.remove('active');
             isCapturing = false;
             capturePhoto();
         }
@@ -198,11 +259,17 @@ function capturePhoto() {
     if (isCapturing) return;
     isCapturing = true;
     
+    if (!canvas || !video) {
+        console.error('Canvas or video element not found');
+        isCapturing = false;
+        return;
+    }
+    
     const context = canvas.getContext('2d');
     
     // Set canvas size to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
     
     // Draw current video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -218,6 +285,8 @@ function capturePhoto() {
     
     // Visual feedback
     showCaptureFeedback();
+    
+    console.log('Photo captured:', capturedPhotos.length);
     
     // Check if session complete
     if (capturedPhotos.length >= config.photoCount) {
@@ -318,7 +387,7 @@ function applyFrame(context) {
             break;
             
         case 'flower':
-            // Simple flower frame (circle with petals)
+            // Simple flower frame (circle)
             context.beginPath();
             context.arc(width/2, height/2, Math.min(width, height) * 0.4, 0, Math.PI * 2);
             context.clip();
@@ -362,15 +431,21 @@ function showCaptureFeedback() {
     document.body.appendChild(flash);
     
     setTimeout(() => {
-        document.body.removeChild(flash);
+        if (flash.parentNode) {
+            document.body.removeChild(flash);
+        }
     }, 300);
 }
 
 function updatePhotoCounter() {
-    photoCounter.textContent = `Foto: ${capturedPhotos.length}/${config.photoCount}`;
+    if (photoCounter) {
+        photoCounter.textContent = `Foto: ${capturedPhotos.length}/${config.photoCount}`;
+    }
 }
 
 function updateFrameOverlay() {
+    if (!frameOverlay) return;
+    
     // Update frame overlay preview
     frameOverlay.innerHTML = '';
     
@@ -379,7 +454,10 @@ function updateFrameOverlay() {
             frameOverlay.style.background = 'linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1))';
             break;
         case 'heart':
-            frameOverlay.style.background = 'radial-gradient(circle, transparent 60%, rgba(255,255,255,0.3) 60%)';
+            frameOverlay.style.background = 'radial-gradient(circle, transparent 60%, rgba(255,105,180,0.3) 60%)';
+            break;
+        case 'star':
+            frameOverlay.style.background = 'radial-gradient(circle, transparent 60%, rgba(255,215,0,0.3) 60%)';
             break;
         default:
             frameOverlay.style.background = 'none';
@@ -392,6 +470,8 @@ function showResults() {
 }
 
 function displayResults() {
+    if (!photoResults) return;
+    
     photoResults.innerHTML = '';
     
     capturedPhotos.forEach((photoData, index) => {
@@ -406,19 +486,33 @@ function displayResults() {
         photoItem.appendChild(img);
         photoResults.appendChild(photoItem);
     });
+    
+    console.log('Results displayed:', capturedPhotos.length, 'photos');
 }
 
 function downloadAllPhotos() {
+    if (capturedPhotos.length === 0) {
+        alert('Tidak ada foto untuk didownload!');
+        return;
+    }
+    
     capturedPhotos.forEach((photoData, index) => {
         const link = document.createElement('a');
         link.download = `photobooth-${index + 1}.jpg`;
         link.href = photoData;
         link.click();
     });
+    
+    console.log('Downloaded all photos');
 }
 
 function sharePhotos() {
-    if (navigator.share && capturedPhotos.length > 0) {
+    if (capturedPhotos.length === 0) {
+        alert('Tidak ada foto untuk dibagikan!');
+        return;
+    }
+    
+    if (navigator.share) {
         navigator.share({
             title: 'My Photobooth Photos',
             text: 'Check out my photos from the photobooth!',
@@ -427,25 +521,30 @@ function sharePhotos() {
         .catch(error => console.log('Error sharing:', error));
     } else {
         // Fallback: download first photo
-        if (capturedPhotos.length > 0) {
-            const link = document.createElement('a');
-            link.download = 'photobooth-share.jpg';
-            link.href = capturedPhotos[0];
-            link.click();
-        }
+        const link = document.createElement('a');
+        link.download = 'photobooth-share.jpg';
+        link.href = capturedPhotos[0];
+        link.click();
     }
 }
 
 function resetUI() {
     // Reset to defaults
-    document.querySelector('.frame-option[data-frame="none"]').classList.add('active');
-    document.querySelector('.number-btn[data-count="4"]').classList.add('active');
-    document.querySelector('.timer-btn[data-timer="3"]').classList.add('active');
-    document.querySelector('.frame-mini-btn[data-frame="none"]').classList.add('active');
+    const defaultFrame = document.querySelector('.frame-option[data-frame="none"]');
+    const defaultNumber = document.querySelector('.number-btn[data-count="4"]');
+    const defaultTimer = document.querySelector('.timer-btn[data-timer="3"]');
+    const defaultFrameMini = document.querySelector('.frame-mini-btn[data-frame="none"]');
+    
+    if (defaultFrame) defaultFrame.classList.add('active');
+    if (defaultNumber) defaultNumber.classList.add('active');
+    if (defaultTimer) defaultTimer.classList.add('active');
+    if (defaultFrameMini) defaultFrameMini.classList.add('active');
     
     config.frame = 'none';
     config.photoCount = 4;
     config.timer = 3;
+    
+    console.log('UI reset to defaults');
 }
 
 // Add flash animation style
@@ -465,8 +564,15 @@ if (!document.getElementById('flash-style')) {
 // Handle page visibility change
 document.addEventListener('visibilitychange', function() {
     if (document.hidden && stream) {
+        console.log('Page hidden, stopping camera');
         stopCamera();
-    } else if (!document.hidden && screens.camera.classList.contains('active') && !stream) {
+    } else if (!document.hidden && screens.camera && screens.camera.classList.contains('active') && !stream) {
+        console.log('Page visible, restarting camera');
         initializeCamera();
     }
+});
+
+// Error handling for camera
+window.addEventListener('error', function(e) {
+    console.error('Global error:', e.error);
 });
