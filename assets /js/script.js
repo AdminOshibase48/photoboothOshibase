@@ -51,6 +51,9 @@ function initializeEventListeners() {
     document.querySelectorAll('.effect-option').forEach(btn => {
         btn.addEventListener('click', handleEffectSelect);
     });
+    
+    // Download button
+    document.getElementById('downloadAll').addEventListener('click', downloadAllPhotos);
 }
 
 function handleOptionSelect(e) {
@@ -89,7 +92,6 @@ function handleEffectSelect(e) {
     
     // Update current effect
     config.currentEffect = effect;
-    console.log('Effect selected:', effect);
 }
 
 function startBooth() {
@@ -273,9 +275,6 @@ function displayCapturedPhotos() {
         photoItem.appendChild(img);
         photoResults.appendChild(photoItem);
     });
-    
-    // Setup download functionality
-    document.getElementById('downloadAll').addEventListener('click', downloadAllPhotos);
 }
 
 function downloadAllPhotos() {
