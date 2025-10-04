@@ -1,12 +1,9 @@
-// AI Photobooth Premium Configuration
+// Simple Photobooth Configuration
 const config = {
-    photoStyle: 'single',
-    aiMagic: 'neon',
+    frame: 'none',
     photoCount: 4,
     timer: 3,
-    currentEffect: 'none',
-    aiEnabled: true,
-    arEnabled: false
+    currentCamera: 'user'
 };
 
 // DOM Elements
@@ -18,148 +15,75 @@ const screens = {
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
-const effectCanvas = document.getElementById('effectCanvas');
-const captureBtn = document.getElementById('captureBtn');
-const switchCameraBtn = document.getElementById('switchCamera');
 const countdown = document.getElementById('countdown');
 const countdownNumber = document.getElementById('countdownNumber');
-const poseGuide = document.getElementById('poseGuide');
-const arProps = document.getElementById('arProps');
-const photoGallery = document.getElementById('photoGallery');
+const photoCounter = document.getElementById('photoCounter');
+const photoResults = document.getElementById('photoResults');
+const frameOverlay = document.getElementById('frameOverlay');
 
 let stream = null;
-let currentFacingMode = 'user';
 let capturedPhotos = [];
 let isCapturing = false;
 
-// Audio Elements
-const shutterSound = document.getElementById('shutterSound');
-const countdownSound = document.getElementById('countdownSound');
-
-// Initialize AI Photobooth
+// Initialize App
 document.addEventListener('DOMContentLoaded', function() {
-    initializeApp();
-    createParticles();
+    initializeEventListeners();
 });
 
-function initializeApp() {
-    initializeEventListeners();
-    initializeAudio();
-    hideLoading();
-}
-
 function initializeEventListeners() {
-    // Home screen interactions
-    document.querySelectorAll('.style-btn').forEach(btn => {
-        btn.addEventListener('click', handleStyleSelect);
+    // Home screen
+    document.querySelectorAll('.frame-option').forEach(option => {
+        option.addEventListener('click', handleFrameSelect);
     });
     
-    document.querySelectorAll('.magic-btn').forEach(btn => {
-        btn.addEventListener('click', handleMagicSelect);
+    document.querySelectorAll('.number-btn').forEach(btn => {
+        btn.addEventListener('click', handleNumberSelect);
     });
     
     document.querySelectorAll('.timer-btn').forEach(btn => {
         btn.addEventListener('click', handleTimerSelect);
     });
     
-    // Number selector
-    document.querySelectorAll('.number-btn').forEach(btn => {
-        btn.addEventListener('click', handleNumberChange);
-    });
+    document.getElementById('startSession').addEventListener('click', startSession);
     
-    // Start session
-    document.getElementById('startAISession').addEventListener('click', startAISession);
+    // Camera screen
     document.getElementById('backToHome').addEventListener('click', goToHome);
-    document.getElementById('newAISession').addEventListener('click', goToHome);
+    document.getElementById('captureBtn').addEventListener('click', startCapture);
+    document.getElementById('switchCamera').addEventListener('click', switchCamera);
     
-    // Camera controls
-    captureBtn.addEventListener('click', startAICaptureProcess);
-    switchCameraBtn.addEventListener('click', switchCamera);
-    document.getElementById('toggleAI').addEventListener('click', toggleAI);
-    document.getElementById('toggleAR').addEventListener('click', toggleAR);
-    
-    // Effects
-    document.querySelectorAll('.effect-option').forEach(btn => {
-        btn.addEventListener('click', handleEffectSelect);
+    // Frame selector in camera
+    document.querySelectorAll('.frame-mini-btn').forEach(btn => {
+        btn.addEventListener('click', handleFrameMiniSelect);
     });
     
-    // AR Props
-    document.querySelectorAll('.prop').forEach(prop => {
-        prop.addEventListener('click', handlePropSelect);
-    });
-    
-    // Results actions
+    // Results screen
+    document.getElementById('newSession').addEventListener('click', goToHome);
     document.getElementById('downloadAll').addEventListener('click', downloadAllPhotos);
-    document.getElementById('shareGallery').addEventListener('click', shareGallery);
+    document.getElementById('sharePhotos').addEventListener('click', sharePhotos);
 }
 
-function initializeAudio() {
-    // Preload audio files
-    try {
-        shutterSound.volume = 0.3;
-        countdownSound.volume = 0.2;
-    } catch (error) {
-        console.log('Audio initialization skipped');
-    }
-}
-
-function createParticles() {
-    const particles = document.getElementById('particles');
-    const particleCount = 50;
+function handleFrameSelect(e) {
+    const option = e.currentTarget;
+    const frame = option.getAttribute('data-frame');
     
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle';
-        particle.style.cssText = `
-            position: absolute;
-            width: ${Math.random() * 4 + 1}px;
-            height: ${Math.random() * 4 + 1}px;
-            background: ${Math.random() > 0.5 ? 'var(--primary)' : 'var(--neon)'};
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            opacity: ${Math.random() * 0.5 + 0.1};
-            animation: float ${Math.random() * 20 + 10}s linear infinite;
-        `;
-        particles.appendChild(particle);
-    }
+    document.querySelectorAll('.frame-option').forEach(opt => {
+        opt.classList.remove('active');
+    });
     
-    // Add CSS for floating animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes float {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px) rotate(360deg); }
-        }
-    `;
-    document.head.appendChild(style);
+    option.classList.add('active');
+    config.frame = frame;
 }
 
-function handleStyleSelect(e) {
+function handleNumberSelect(e) {
     const button = e.currentTarget;
-    const style = button.getAttribute('data-style');
+    const count = parseInt(button.getAttribute('data-count'));
     
-    document.querySelectorAll('.style-btn').forEach(btn => {
+    document.querySelectorAll('.number-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
     button.classList.add('active');
-    config.photoStyle = style;
-    
-    // Update UI based on style
-    updateStyleUI(style);
-}
-
-function handleMagicSelect(e) {
-    const button = e.currentTarget;
-    const magic = button.getAttribute('data-magic');
-    
-    document.querySelectorAll('.magic-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    button.classList.add('active');
-    config.aiMagic = magic;
+    config.photoCount = count;
 }
 
 function handleTimerSelect(e) {
@@ -174,94 +98,24 @@ function handleTimerSelect(e) {
     config.timer = timer;
 }
 
-function handleNumberChange(e) {
+function handleFrameMiniSelect(e) {
     const button = e.currentTarget;
-    const display = button.parentElement.querySelector('.number-display');
-    let current = parseInt(display.textContent);
+    const frame = button.getAttribute('data-frame');
     
-    if (button.classList.contains('plus')) {
-        current = Math.min(12, current + 1);
-    } else {
-        current = Math.max(1, current - 1);
-    }
-    
-    display.textContent = current;
-    config.photoCount = current;
-}
-
-function handleEffectSelect(e) {
-    const button = e.currentTarget;
-    const effect = button.getAttribute('data-effect');
-    
-    document.querySelectorAll('.effect-option').forEach(btn => {
+    document.querySelectorAll('.frame-mini-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
     button.classList.add('active');
-    config.currentEffect = effect;
-    
-    // Apply effect preview
-    applyEffectPreview(effect);
+    config.frame = frame;
+    updateFrameOverlay();
 }
 
-function handlePropSelect(e) {
-    const prop = e.currentTarget;
-    const propType = prop.getAttribute('data-prop');
-    
-    // Toggle prop active state
-    prop.classList.toggle('active');
-    
-    // Add AR prop effect
-    if (prop.classList.contains('active')) {
-        activateARProp(propType);
-    } else {
-        deactivateARProp(propType);
-    }
-}
-
-function updateStyleUI(style) {
-    const poseGuide = document.getElementById('poseGuide');
-    
-    switch(style) {
-        case 'single':
-            poseGuide.style.display = 'block';
-            break;
-        case 'collage':
-            poseGuide.style.display = 'block';
-            // Show grid overlay for collage
-            break;
-        case 'boomerang':
-            poseGuide.style.display = 'block';
-            // Show boomerang instructions
-            break;
-        case '360':
-            poseGuide.style.display = 'block';
-            // Show 360 instructions
-            break;
-    }
-}
-
-function applyEffectPreview(effect) {
-    // This would apply the selected effect to the live preview
-    console.log('Applying effect:', effect);
-    // Implementation would go in effects.js
-}
-
-function activateARProp(propType) {
-    console.log('Activating AR prop:', propType);
-    // AR prop activation logic would go here
-}
-
-function deactivateARProp(propType) {
-    console.log('Deactivating AR prop:', propType);
-    // AR prop deactivation logic would go here
-}
-
-function startAISession() {
+function startSession() {
     showScreen('camera');
-    initializeAICamera();
+    initializeCamera();
     updatePhotoCounter();
-    initializePoseDetection();
+    updateFrameOverlay();
 }
 
 function goToHome() {
@@ -278,29 +132,22 @@ function showScreen(screenName) {
     screens[screenName].classList.add('active');
 }
 
-async function initializeAICamera() {
+async function initializeCamera() {
     try {
         const constraints = {
             video: {
-                facingMode: currentFacingMode,
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
-            },
-            audio: false
+                facingMode: config.currentCamera,
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            }
         };
         
         stream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = stream;
         
-        // Initialize canvas sizes
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        effectCanvas.width = video.videoWidth;
-        effectCanvas.height = video.videoHeight;
-        
     } catch (error) {
-        console.error('Error accessing AI camera:', error);
-        showError('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.');
+        console.error('Error accessing camera:', error);
+        alert('Tidak dapat mengakses kamera. Pastikan izin kamera sudah diberikan.');
     }
 }
 
@@ -312,72 +159,24 @@ function stopCamera() {
 }
 
 async function switchCamera() {
-    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+    config.currentCamera = config.currentCamera === 'user' ? 'environment' : 'user';
     stopCamera();
-    await initializeAICamera();
+    await initializeCamera();
 }
 
-function toggleAI() {
-    const aiBtn = document.getElementById('toggleAI');
-    config.aiEnabled = !config.aiEnabled;
-    
-    if (config.aiEnabled) {
-        aiBtn.classList.add('active');
-        initializePoseDetection();
-    } else {
-        aiBtn.classList.remove('active');
-        stopPoseDetection();
-    }
-}
-
-function toggleAR() {
-    const arBtn = document.getElementById('toggleAR');
-    config.arEnabled = !config.arEnabled;
-    
-    if (config.arEnabled) {
-        arBtn.classList.add('active');
-        arProps.style.display = 'flex';
-    } else {
-        arBtn.classList.remove('active');
-        arProps.style.display = 'none';
-    }
-}
-
-function initializePoseDetection() {
-    if (!config.aiEnabled) return;
-    
-    // Initialize AI pose detection
-    console.log('AI Pose Detection initialized');
-    // This would integrate with TensorFlow.js or similar AI library
-}
-
-function stopPoseDetection() {
-    console.log('AI Pose Detection stopped');
-    // Clean up AI resources
-}
-
-function startAICaptureProcess() {
+function startCapture() {
     if (isCapturing) return;
     
     if (config.timer > 0) {
-        startAICountdown();
+        startCountdown();
     } else {
-        captureAIPhoto();
+        capturePhoto();
     }
 }
 
-function startAICountdown() {
+function startCountdown() {
     let count = config.timer;
     isCapturing = true;
-    captureBtn.style.pointerEvents = 'none';
-    
-    // Play countdown sound
-    try {
-        countdownSound.currentTime = 0;
-        countdownSound.play();
-    } catch (error) {
-        console.log('Countdown sound not available');
-    }
     
     countdownNumber.textContent = count;
     countdown.classList.add('active');
@@ -389,134 +188,163 @@ function startAICountdown() {
         if (count <= 0) {
             clearInterval(countdownInterval);
             countdown.classList.remove('active');
-            captureBtn.style.pointerEvents = 'auto';
             isCapturing = false;
-            captureAIPhoto();
+            capturePhoto();
         }
     }, 1000);
 }
 
-function captureAIPhoto() {
+function capturePhoto() {
     if (isCapturing) return;
     isCapturing = true;
     
-    // Play shutter sound
-    try {
-        shutterSound.currentTime = 0;
-        shutterSound.play();
-    } catch (error) {
-        console.log('Shutter sound not available');
-    }
-    
     const context = canvas.getContext('2d');
-    const effectContext = effectCanvas.getContext('2d');
     
-    // Set canvas size
+    // Set canvas size to match video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     
-    // Capture frame
+    // Draw current video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     
-    // Apply AI effects
-    applyAIEffects(context, effectContext);
+    // Apply frame
+    applyFrame(context);
     
-    // Convert to data URL
+    // Convert to data URL and store
     const photoData = canvas.toDataURL('image/jpeg', 0.9);
     capturedPhotos.push(photoData);
+    
+    updatePhotoCounter();
     
     // Visual feedback
     showCaptureFeedback();
     
-    updatePhotoCounter();
-    
     // Check if session complete
     if (capturedPhotos.length >= config.photoCount) {
-        setTimeout(showAIResults, 1000);
+        setTimeout(showResults, 500);
     } else {
         isCapturing = false;
     }
 }
 
-function applyAIEffects(context, effectContext) {
-    // Apply the selected AI magic and effects
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+function applyFrame(context) {
+    const width = canvas.width;
+    const height = canvas.height;
     
-    switch(config.aiMagic) {
-        case 'neon':
-            applyNeonEffect(imageData);
-            break;
-        case 'hologram':
-            applyHologramEffect(imageData);
-            break;
-        case 'particle':
-            applyParticleEffect(imageData, effectContext);
-            break;
-        case 'cyber':
-            applyCyberEffect(imageData);
-            break;
-    }
+    context.save();
     
-    switch(config.currentEffect) {
-        case 'neon':
-            applyNeonFilter(imageData);
+    switch(config.frame) {
+        case 'polaroid':
+            // White polaroid border
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, width, height);
+            
+            // Image area (smaller than canvas)
+            const imgWidth = width * 0.9;
+            const imgHeight = height * 0.8;
+            const imgX = (width - imgWidth) / 2;
+            const imgY = (height - imgHeight) / 2 - 20;
+            
+            // Draw the captured image
+            context.drawImage(video, imgX, imgY, imgWidth, imgHeight);
+            
+            // Bottom area for text
+            context.fillStyle = 'white';
+            context.fillRect(0, imgY + imgHeight, width, height - (imgY + imgHeight));
             break;
+            
+        case 'heart':
+            // Create heart shape clip
+            context.beginPath();
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const size = Math.min(width, height) * 0.4;
+            
+            // Heart shape path
+            for (let i = 0; i < 360; i++) {
+                const t = i * Math.PI / 180;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
+                const scaleX = size / 16;
+                const scaleY = size / 16;
+                
+                if (i === 0) {
+                    context.moveTo(centerX + x * scaleX, centerY + y * scaleY);
+                } else {
+                    context.lineTo(centerX + x * scaleX, centerY + y * scaleY);
+                }
+            }
+            context.closePath();
+            context.clip();
+            
+            // Draw the image
+            context.drawImage(video, 0, 0, width, height);
+            break;
+            
+        case 'star':
+            // Create star shape clip
+            context.beginPath();
+            const starCenterX = width / 2;
+            const starCenterY = height / 2;
+            const starSize = Math.min(width, height) * 0.4;
+            const spikes = 5;
+            
+            let rotation = Math.PI / 2 * 3;
+            let x = starCenterX;
+            let y = starCenterY;
+            const step = Math.PI / spikes;
+
+            context.moveTo(starCenterX, starCenterY - starSize);
+            
+            for (let i = 0; i < spikes; i++) {
+                x = starCenterX + Math.cos(rotation) * starSize;
+                y = starCenterY + Math.sin(rotation) * starSize;
+                context.lineTo(x, y);
+                rotation += step;
+
+                x = starCenterX + Math.cos(rotation) * (starSize * 0.5);
+                y = starCenterY + Math.sin(rotation) * (starSize * 0.5);
+                context.lineTo(x, y);
+                rotation += step;
+            }
+            
+            context.lineTo(starCenterX, starCenterY - starSize);
+            context.closePath();
+            context.clip();
+            
+            // Draw the image
+            context.drawImage(video, 0, 0, width, height);
+            break;
+            
+        case 'flower':
+            // Simple flower frame (circle with petals)
+            context.beginPath();
+            context.arc(width/2, height/2, Math.min(width, height) * 0.4, 0, Math.PI * 2);
+            context.clip();
+            context.drawImage(video, 0, 0, width, height);
+            break;
+            
         case 'retro':
-            applyRetroFilter(imageData);
+            // Retro colored border
+            context.fillStyle = '#ff6b6b';
+            context.fillRect(0, 0, width, height);
+            
+            // Inner image area
+            const borderSize = 20;
+            context.drawImage(video, borderSize, borderSize, width - borderSize*2, height - borderSize*2);
             break;
-        case 'cyber':
-            applyCyberFilter(imageData);
-            break;
-        case 'holo':
-            applyHoloFilter(imageData);
-            break;
-        case 'prism':
-            applyPrismFilter(imageData);
-            break;
+            
+        default:
+            // No frame - just draw the image
+            context.drawImage(video, 0, 0, width, height);
     }
     
-    context.putImageData(imageData, 0, 0);
-}
-
-// Placeholder effect functions - these would be implemented in effects.js
-function applyNeonEffect(imageData) {
-    console.log('Applying neon AI effect');
-}
-
-function applyHologramEffect(imageData) {
-    console.log('Applying hologram AI effect');
-}
-
-function applyParticleEffect(imageData, effectContext) {
-    console.log('Applying particle AI effect');
-}
-
-function applyCyberEffect(imageData) {
-    console.log('Applying cyber AI effect');
-}
-
-function applyNeonFilter(imageData) {
-    console.log('Applying neon filter');
-}
-
-function applyRetroFilter(imageData) {
-    console.log('Applying retro filter');
-}
-
-function applyCyberFilter(imageData) {
-    console.log('Applying cyber filter');
-}
-
-function applyHoloFilter(imageData) {
-    console.log('Applying holo filter');
-}
-
-function applyPrismFilter(imageData) {
-    console.log('Applying prism filter');
+    context.restore();
 }
 
 function showCaptureFeedback() {
-    // Add visual feedback for photo capture
+    // Simple flash effect
     const flash = document.createElement('div');
     flash.style.cssText = `
         position: fixed;
@@ -536,35 +364,35 @@ function showCaptureFeedback() {
     setTimeout(() => {
         document.body.removeChild(flash);
     }, 300);
-    
-    // Add CSS for flash animation
-    if (!document.getElementById('flash-style')) {
-        const style = document.createElement('style');
-        style.id = 'flash-style';
-        style.textContent = `
-            @keyframes flash {
-                0% { opacity: 0; }
-                50% { opacity: 0.7; }
-                100% { opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
 }
 
 function updatePhotoCounter() {
-    document.getElementById('currentPhoto').textContent = capturedPhotos.length;
-    document.getElementById('totalPhotos').textContent = config.photoCount;
+    photoCounter.textContent = `Foto: ${capturedPhotos.length}/${config.photoCount}`;
 }
 
-function showAIResults() {
+function updateFrameOverlay() {
+    // Update frame overlay preview
+    frameOverlay.innerHTML = '';
+    
+    switch(config.frame) {
+        case 'polaroid':
+            frameOverlay.style.background = 'linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1))';
+            break;
+        case 'heart':
+            frameOverlay.style.background = 'radial-gradient(circle, transparent 60%, rgba(255,255,255,0.3) 60%)';
+            break;
+        default:
+            frameOverlay.style.background = 'none';
+    }
+}
+
+function showResults() {
     showScreen('results');
-    displayAIGallery();
-    generateQRCode();
+    displayResults();
 }
 
-function displayAIGallery() {
-    photoGallery.innerHTML = '';
+function displayResults() {
+    photoResults.innerHTML = '';
     
     capturedPhotos.forEach((photoData, index) => {
         const photoItem = document.createElement('div');
@@ -572,111 +400,73 @@ function displayAIGallery() {
         
         const img = document.createElement('img');
         img.src = photoData;
-        img.alt = `AI Enhanced Photo ${index + 1}`;
+        img.alt = `Photo ${index + 1}`;
         img.loading = 'lazy';
         
         photoItem.appendChild(img);
-        photoGallery.appendChild(photoItem);
+        photoResults.appendChild(photoItem);
     });
-}
-
-function generateQRCode() {
-    const qrCode = document.getElementById('qrCode');
-    
-    // Simple QR code simulation
-    if (capturedPhotos.length > 0) {
-        qrCode.innerHTML = `
-            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; text-align: center;">
-                <div style="font-size: 24px; margin-bottom: 10px;">📸</div>
-                <div>AI Photos Ready!</div>
-                <div style="font-size: 10px; margin-top: 5px;">Scan to Download</div>
-            </div>
-        `;
-    }
 }
 
 function downloadAllPhotos() {
     capturedPhotos.forEach((photoData, index) => {
         const link = document.createElement('a');
-        link.download = `ai-photobooth-${index + 1}.jpg`;
+        link.download = `photobooth-${index + 1}.jpg`;
         link.href = photoData;
         link.click();
-        
-        // Add delay between downloads
-        setTimeout(() => {}, 100);
     });
 }
 
-function shareGallery() {
+function sharePhotos() {
     if (navigator.share && capturedPhotos.length > 0) {
         navigator.share({
-            title: 'My AI Photobooth Photos',
-            text: 'Check out my amazing AI-enhanced photos!',
+            title: 'My Photobooth Photos',
+            text: 'Check out my photos from the photobooth!',
             url: window.location.href
         })
         .catch(error => console.log('Error sharing:', error));
     } else {
-        // Fallback: copy first photo to clipboard or show QR
-        alert('Share functionality requires Web Share API support. Use the QR code or download photos instead.');
+        // Fallback: download first photo
+        if (capturedPhotos.length > 0) {
+            const link = document.createElement('a');
+            link.download = 'photobooth-share.jpg';
+            link.href = capturedPhotos[0];
+            link.click();
+        }
     }
 }
 
 function resetUI() {
-    document.querySelectorAll('.style-btn, .magic-btn, .timer-btn, .effect-option').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
     // Reset to defaults
-    document.querySelector('.style-btn[data-style="single"]').classList.add('active');
-    document.querySelector('.magic-btn[data-magic="neon"]').classList.add('active');
+    document.querySelector('.frame-option[data-frame="none"]').classList.add('active');
+    document.querySelector('.number-btn[data-count="4"]').classList.add('active');
     document.querySelector('.timer-btn[data-timer="3"]').classList.add('active');
-    document.querySelector('.effect-option[data-effect="none"]').classList.add('active');
+    document.querySelector('.frame-mini-btn[data-frame="none"]').classList.add('active');
     
-    document.getElementById('toggleAI').classList.add('active');
-    document.getElementById('toggleAR').classList.remove('active');
-    
-    config.photoStyle = 'single';
-    config.aiMagic = 'neon';
+    config.frame = 'none';
+    config.photoCount = 4;
     config.timer = 3;
-    config.currentEffect = 'none';
-    config.aiEnabled = true;
-    config.arEnabled = false;
 }
 
-function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background: var(--danger);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 10px;
-        z-index: 10000;
-        box-shadow: 0 10px 30px rgba(244, 67, 54, 0.3);
+// Add flash animation style
+if (!document.getElementById('flash-style')) {
+    const style = document.createElement('style');
+    style.id = 'flash-style';
+    style.textContent = `
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.7; }
+            100% { opacity: 0; }
+        }
     `;
-    errorDiv.textContent = message;
-    
-    document.body.appendChild(errorDiv);
-    
-    setTimeout(() => {
-        document.body.removeChild(errorDiv);
-    }, 5000);
+    document.head.appendChild(style);
 }
 
-function hideLoading() {
-    setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
-    }, 2000);
-}
-
-// Handle visibility change for performance
+// Handle page visibility change
 document.addEventListener('visibilitychange', function() {
     if (document.hidden && stream) {
         stopCamera();
     } else if (!document.hidden && screens.camera.classList.contains('active') && !stream) {
-        initializeAICamera();
+        initializeCamera();
     }
 });
