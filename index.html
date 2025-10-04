@@ -3,149 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Photobooth | Oshibase</title>
+    <title>Beauty Photobooth | Oshibase</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Home Screen -->
-    <div id="homeScreen" class="screen active">
+    <!-- Template Selection Screen -->
+    <div id="templateScreen" class="screen active">
         <div class="container">
             <header class="header">
-                <h1><i class="fas fa-camera"></i> SIMPLE PHOTOBOOTH</h1>
-                <p>Ambil foto dengan frame-frame keren!</p>
+                <h1><i class="fas fa-magic"></i> BEAUTY PHOTOBOOTH</h1>
+                <p>Pilih template favoritmu dan mulai berfoto!</p>
             </header>
 
-            <div class="setup-options">
-                <!-- Pilihan Frame -->
-                <div class="option-group">
-                    <h3><i class="fas fa-border-style"></i> Pilih Frame</h3>
-                    <div class="frames-grid">
-                        <div class="frame-option active" data-frame="none">
-                            <div class="frame-preview no-frame"></div>
-                            <span>No Frame</span>
-                        </div>
-                        <div class="frame-option" data-frame="polaroid">
-                            <div class="frame-preview polaroid-frame"></div>
-                            <span>Polaroid</span>
-                        </div>
-                        <div class="frame-option" data-frame="heart">
-                            <div class="frame-preview heart-frame"></div>
-                            <span>Heart</span>
-                        </div>
-                        <div class="frame-option" data-frame="star">
-                            <div class="frame-preview star-frame"></div>
-                            <span>Star</span>
-                        </div>
-                        <div class="frame-option" data-frame="flower">
-                            <div class="frame-preview flower-frame"></div>
-                            <span>Flower</span>
-                        </div>
-                        <div class="frame-option" data-frame="retro">
-                            <div class="frame-preview retro-frame"></div>
-                            <span>Retro</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Jumlah Foto -->
-                <div class="option-group">
-                    <h3><i class="fas fa-images"></i> Jumlah Foto</h3>
-                    <div class="number-options">
-                        <button class="number-btn active" data-count="1">1</button>
-                        <button class="number-btn" data-count="4">4</button>
-                        <button class="number-btn" data-count="6">6</button>
-                        <button class="number-btn" data-count="9">9</button>
-                    </div>
-                </div>
-
-                <!-- Timer -->
-                <div class="option-group">
-                    <h3><i class="fas fa-clock"></i> Timer</h3>
-                    <div class="timer-options">
-                        <button class="timer-btn active" data-timer="0">No Timer</button>
-                        <button class="timer-btn" data-timer="3">3s</button>
-                        <button class="timer-btn" data-timer="5">5s</button>
-                        <button class="timer-btn" data-timer="10">10s</button>
-                    </div>
+            <div class="template-categories">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="all">All Templates</button>
+                    <button class="category-tab" data-category="fun">Fun</button>
+                    <button class="category-tab" data-category="elegant">Elegant</button>
+                    <button class="category-tab" data-category="cute">Cute</button>
+                    <button class="category-tab" data-category="festive">Festive</button>
                 </div>
             </div>
 
-            <button id="startSession" class="start-btn">
-                <i class="fas fa-play"></i> MULAI PHOTOBOOTH
-            </button>
+            <div class="templates-grid">
+                <!-- Template 1 -->
+                <div class="template-card" data-category="fun">
+                    <div class="template-preview fun-template-1">
+                        <div class="template-badge">Fun</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Color Splash</h3>
+                        <p>Background warna-warni yang cerah</p>
+                        <button class="select-template" data-template="color-splash">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template 2 -->
+                <div class="template-card" data-category="elegant">
+                    <div class="template-preview elegant-template-1">
+                        <div class="template-badge">Elegant</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Gold Frame</h3>
+                        <p>Bingkai emas yang mewah</p>
+                        <button class="select-template" data-template="gold-frame">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template 3 -->
+                <div class="template-card" data-category="cute">
+                    <div class="template-preview cute-template-1">
+                        <div class="template-badge">Cute</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Kawaii Hearts</h3>
+                        <p>Hati dan sparkle yang menggemaskan</p>
+                        <button class="select-template" data-template="kawaii-hearts">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template 4 -->
+                <div class="template-card" data-category="festive">
+                    <div class="template-preview festive-template-1">
+                        <div class="template-badge">Festive</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Party Time</h3>
+                        <p>Konsep pesta yang meriah</p>
+                        <button class="select-template" data-template="party-time">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template 5 -->
+                <div class="template-card" data-category="fun">
+                    <div class="template-preview fun-template-2">
+                        <div class="template-badge">Fun</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Comic Style</h3>
+                        <p>Efek seperti komik yang menyenangkan</p>
+                        <button class="select-template" data-template="comic-style">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template 6 -->
+                <div class="template-card" data-category="elegant">
+                    <div class="template-preview elegant-template-2">
+                        <div class="template-badge">Elegant</div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Vintage</h3>
+                        <p>Nuansa klasik dan retro</p>
+                        <button class="select-template" data-template="vintage">
+                            <i class="fas fa-check"></i> Pilih
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Camera Screen -->
     <div id="cameraScreen" class="screen">
         <div class="camera-header">
-            <button id="backToHome" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back
+            <button id="backToTemplates" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Templates
             </button>
-            <div class="session-info">
-                <span id="photoCounter">Foto: 0/4</span>
+            <div class="template-name">
+                <span id="currentTemplateName">Color Splash</span>
+            </div>
+            <div class="camera-settings">
+                <button id="switchCamera" class="icon-btn">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button id="toggleFlash" class="icon-btn">
+                    <i class="fas fa-bolt"></i>
+                </button>
             </div>
         </div>
 
         <div class="camera-container">
-            <div class="viewfinder">
+            <!-- Camera View with Template Overlay -->
+            <div class="camera-view">
                 <video id="video" autoplay playsinline></video>
                 <canvas id="canvas" style="display: none;"></canvas>
                 
-                <!-- Countdown -->
-                <div id="countdown" class="countdown">
-                    <span id="countdownNumber">3</span>
+                <!-- Template Overlay -->
+                <div id="templateOverlay" class="template-overlay">
+                    <!-- Template elements will be added here dynamically -->
                 </div>
 
-                <!-- Current Frame Overlay -->
-                <div id="frameOverlay" class="frame-overlay"></div>
+                <!-- Countdown -->
+                <div id="countdown" class="countdown">
+                    <div class="countdown-number">3</div>
+                </div>
+
+                <!-- Capture Guide -->
+                <div class="capture-guide">
+                    <div class="guide-grid">
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                    </div>
+                </div>
             </div>
 
+            <!-- Camera Controls -->
             <div class="camera-controls">
+                <div class="left-controls">
+                    <button id="toggleTimer" class="control-btn">
+                        <i class="fas fa-clock"></i>
+                        <span>Timer</span>
+                    </button>
+                </div>
+
                 <button id="captureBtn" class="capture-btn">
-                    <i class="fas fa-camera"></i>
+                    <div class="capture-circle">
+                        <i class="fas fa-camera"></i>
+                    </div>
                 </button>
-                <button id="switchCamera" class="control-btn">
-                    <i class="fas fa-sync-alt"></i>
-                </button>
+
+                <div class="right-controls">
+                    <button id="toggleGrid" class="control-btn">
+                        <i class="fas fa-th"></i>
+                        <span>Grid</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Frame Selector -->
-            <div class="frame-selector">
-                <h4>Ganti Frame:</h4>
-                <div class="frame-options-mini">
-                    <button class="frame-mini-btn active" data-frame="none">None</button>
-                    <button class="frame-mini-btn" data-frame="polaroid">Polaroid</button>
-                    <button class="frame-mini-btn" data-frame="heart">Heart</button>
-                    <button class="frame-mini-btn" data-frame="star">Star</button>
-                    <button class="frame-mini-btn" data-frame="flower">Flower</button>
-                    <button class="frame-mini-btn" data-frame="retro">Retro</button>
+            <!-- Photo Counter -->
+            <div class="photo-counter">
+                <span id="photosTaken">0</span>/<span id="totalPhotos">4</span> Photos
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview & Edit Screen -->
+    <div id="previewScreen" class="screen">
+        <div class="preview-header">
+            <button id="backToCamera" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Retake
+            </button>
+            <h2>Preview Photo</h2>
+            <button id="confirmPhoto" class="confirm-btn">
+                <i class="fas fa-check"></i> Save
+            </button>
+        </div>
+
+        <div class="preview-container">
+            <div class="photo-preview">
+                <img id="previewImage" src="" alt="Preview">
+            </div>
+
+            <div class="edit-tools">
+                <div class="tool-section">
+                    <h4>Filters</h4>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="none">
+                            <div class="filter-preview original"></div>
+                            <span>Original</span>
+                        </button>
+                        <button class="filter-btn" data-filter="warm">
+                            <div class="filter-preview warm"></div>
+                            <span>Warm</span>
+                        </button>
+                        <button class="filter-btn" data-filter="cool">
+                            <div class="filter-preview cool"></div>
+                            <span>Cool</span>
+                        </button>
+                        <button class="filter-btn" data-filter="vintage">
+                            <div class="filter-preview vintage"></div>
+                            <span>Vintage</span>
+                        </button>
+                        <button class="filter-btn" data-filter="bw">
+                            <div class="filter-preview bw"></div>
+                            <span>B&W</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tool-section">
+                    <h4>Adjustments</h4>
+                    <div class="adjustment-options">
+                        <div class="adjustment">
+                            <label>Brightness</label>
+                            <input type="range" id="brightness" min="0" max="200" value="100">
+                        </div>
+                        <div class="adjustment">
+                            <label>Contrast</label>
+                            <input type="range" id="contrast" min="0" max="200" value="100">
+                        </div>
+                        <div class="adjustment">
+                            <label>Saturation</label>
+                            <input type="range" id="saturation" min="0" max="200" value="100">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Results Screen -->
-    <div id="resultsScreen" class="screen">
-        <div class="results-header">
-            <h2>Hasil Fotomu! 🎉</h2>
-            <button id="newSession" class="new-session-btn">
-                <i class="fas fa-redo"></i> Foto Lagi
+    <!-- Gallery Screen -->
+    <div id="galleryScreen" class="screen">
+        <div class="gallery-header">
+            <button id="backToTemplatesFromGallery" class="back-btn">
+                <i class="fas fa-arrow-left"></i> New Session
+            </button>
+            <h2>Your Photos</h2>
+            <button id="downloadAll" class="download-all-btn">
+                <i class="fas fa-download"></i> Download All
             </button>
         </div>
-        
-        <div class="results-container">
-            <div id="photoResults" class="photo-results">
-                <!-- Hasil foto akan muncul di sini -->
+
+        <div class="gallery-container">
+            <div id="photoGallery" class="photo-gallery">
+                <!-- Photos will be added here -->
             </div>
-            
-            <div class="action-buttons">
-                <button id="downloadAll" class="download-btn">
-                    <i class="fas fa-download"></i> Download All
+
+            <div class="gallery-actions">
+                <button id="shareGallery" class="action-btn share-btn">
+                    <i class="fas fa-share-alt"></i> Share Gallery
                 </button>
-                <button id="sharePhotos" class="share-btn">
-                    <i class="fas fa-share-alt"></i> Share
+                <button id="newSession" class="action-btn primary-btn">
+                    <i class="fas fa-camera"></i> Take More Photos
                 </button>
             </div>
         </div>
