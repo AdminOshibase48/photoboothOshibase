@@ -462,6 +462,10 @@ body {
         grid-template-columns: 1fr;
         padding: 20px;
     }
+    
+    .countdown {
+        font-size: 6rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -481,5 +485,15 @@ body {
         flex-direction: column;
         gap: 10px;
         text-align: center;
+    }
+    
+    .results-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
     }
 }
