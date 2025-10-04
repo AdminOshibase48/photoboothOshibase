@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Photobooth | Oshibase</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" type="image/png" href="img/logo.svg" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Memuat Photobooth...</p>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+        <div class="container">
+            <header class="header">
+                <h1><i class="fas fa-camera-retro"></i> SUPER PHOTOBOOTH</h1>
+                <p>Capture momen terbaikmu dengan style yang keren!</p>
+            </header>
+
+            <div class="home-content">
+                <div class="feature-cards">
+                    <div class="card">
+                        <i class="fas fa-magic"></i>
+                        <h3>Efek Keren</h3>
+                        <p>Filter dan efek spesial yang bisa bikin foto mu lebih hidup</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-gift"></i>
+                        <h3>Frame Lucu</h3>
+                        <p>Banyak pilihan frame untuk setiap moment spesial</p>
+                    </div>
+                    <div class="card">
+                        <i class="fas fa-share-alt"></i>
+                        <h3>Share Mudah</h3>
+                        <p>Langung share ke sosial media favoritmu</p>
+                    </div>
+                </div>
+
+                <div class="setup-options">
+                    <!-- Jumlah Foto -->
+                    <div class="option-group">
+                        <h3><i class="fas fa-images"></i> Mau berapa foto?</h3>
+                        <div class="option-buttons">
+                            <button class="option-btn" data-jumlah="1">1 Foto</button>
+                            <button class="option-btn" data-jumlah="4">4 Foto</button>
+                            <button class="option-btn" data-jumlah="6">6 Foto</button>
+                            <button class="option-btn" data-jumlah="9">9 Foto</button>
+                        </div>
+                    </div>
+
+                    <!-- Tipe Tatanan -->
+                    <div class="option-group">
+                        <h3><i class="fas fa-th"></i> Tatanan foto?</h3>
+                        <div class="option-buttons">
+                            <button class="option-btn" data-tatanan="single">Single</button>
+                            <button class="option-btn" data-tatanan="grid">Grid</button>
+                            <button class="option-btn" data-tatanan="collage">Collage</button>
+                            <button class="option-btn" data-tatanan="boomerang">Boomerang</button>
+                        </div>
+                    </div>
+
+                    <!-- Timer -->
+                    <div class="option-group">
+                        <h3><i class="fas fa-clock"></i> Timer countdown?</h3>
+                        <div class="option-buttons">
+                            <button class="option-btn" data-timer="0">No Timer</button>
+                            <button class="option-btn" data-timer="3">3 Detik</button>
+                            <button class="option-btn" data-timer="5">5 Detik</button>
+                            <button class="option-btn" data-timer="10">10 Detik</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="startBooth" class="btn-primary start-btn">
+                    <i class="fas fa-play"></i> MULAI PHOTOBOOTH
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Screen -->
+    <div id="cameraScreen" class="screen">
+        <div class="camera-header">
+            <button id="backToHome" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h2>Photobooth Session</h2>
+            <div class="session-info">
+                <span id="photoCounter">Foto: 0/4</span>
+            </div>
+        </div>
+
+        <div class="camera-container">
+            <div class="viewfinder">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+                
+                <!-- Countdown Timer -->
+                <div id="countdown" class="countdown">
+                    <span id="countdownNumber">3</span>
+                </div>
+
+                <!-- Grid Overlay -->
+                <div id="gridOverlay" class="grid-overlay">
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                    <div class="grid-line"></div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="camera-controls">
+                <button id="captureBtn" class="btn-capture">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <button id="switchCamera" class="btn-secondary">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button id="toggleFlash" class="btn-secondary">
+                    <i class="fas fa-bolt"></i>
+                </button>
+            </div>
+
+            <!-- Effects Panel -->
+            <div class="effects-panel">
+                <h4>Efek & Filter</h4>
+                <div class="effects-scroll">
+                    <button class="effect-option" data-effect="none">
+                        <div class="effect-preview normal"></div>
+                        Normal
+                    </button>
+                    <button class="effect-option" data-effect="vintage">
+                        <div class="effect-preview vintage"></div>
+                        Vintage
+                    </button>
+                    <button class="effect-option" data-effect="bw">
+                        <div class="effect-preview bw"></div>
+                        Black & White
+                    </button>
+                    <button class="effect-option" data-effect="warm">
+                        <div class="effect-preview warm"></div>
+                        Warm
+                    </button>
+                    <button class="effect-option" data-effect="cool">
+                        <div class="effect-preview cool"></div>
+                        Cool
+                    </button>
+                    <button class="effect-option" data-effect="rainbow">
+                        <div class="effect-preview rainbow"></div>
+                        Rainbow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="resultsScreen" class="screen">
+        <div class="results-header">
+            <h2>Hasil Fotomu!</h2>
+            <button id="newSession" class="btn-primary">
+                <i class="fas fa-redo"></i> Foto Lagi
+            </button>
+        </div>
+        
+        <div class="results-container">
+            <div id="photoResults" class="photo-results">
+                <!-- Hasil foto akan muncul di sini -->
+            </div>
+            
+            <div class="action-buttons">
+                <button id="downloadAll" class="btn-success">
+                    <i class="fas fa-download"></i> Download All
+                </button>
+                <button id="sharePhotos" class="btn-secondary">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
